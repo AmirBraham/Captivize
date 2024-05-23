@@ -12,16 +12,16 @@ import config from "@/config";
 // You are an excellent lawyer.
 
 // I need your help to write a simple privacy policy for my website. Here is some context:
-// - Website: https://captivize.com
-// - Name: Captivize
-// - Description: Generate captions for videos
+// - Website: https://shipfa.st
+// - Name: ShipFast
+// - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
 // - User data collected: name, email and payment information
 // - Non-personal data collection: web cookies
 // - Purpose of Data Collection: Order processing
 // - Data sharing: we do not share the data with any other parties
 // - Children's Privacy: we do not collect any data from children
 // - Updates to the Privacy Policy: users will be updated by email
-// - Contact information: tonyconte1995@gmail.com
+// - Contact information: marc@shipfa.st
 
 // Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
 
@@ -58,7 +58,6 @@ const PrivacyPolicy = () => {
           style={{ fontFamily: "sans-serif" }}
         >
           {`
-Privacy Policy for Captivize
 
 Effective Date: May 23, 2024
 

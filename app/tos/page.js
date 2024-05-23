@@ -12,15 +12,15 @@ import config from "@/config";
 // You are an excellent lawyer.
 
 // I need your help to write a simple Terms & Services for my website. Here is some context:
-// - Website: https://captivize.com
-// - Name: Captivize
-// - Contact information: amirbrahamm@gmail.com
-// - Description: Generate captions from videos
-// - Ownership: when buying a package, users can add captions to their videos
+// - Website: https://shipfa.st
+// - Name: ShipFast
+// - Contact information: marc@shipfa.st
+// - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
+// - Ownership: when buying a package, users can download code to create apps. They own the code but they do not have the right to resell it. They can ask for a full refund within 7 day after the purchase.
 // - User data collected: name, email and payment information
 // - Non-personal data collection: web cookies
-// - Link to privacy-policy: https://captivize.com/privacy-policy
-// - Governing Law: United States
+// - Link to privacy-policy: https://shipfa.st/privacy-policy
+// - Governing Law: France
 // - Updates to the Terms: users will be updated by email
 
 // Please write a simple Terms & Services for my site. Add the current date. Do not add or explain your reasoning. Answer:
