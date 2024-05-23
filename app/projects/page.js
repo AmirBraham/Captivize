@@ -1,7 +1,6 @@
 "use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { Suspense, useRef } from 'react'
 export default function Projects() {
     const fileInput = useRef(null);

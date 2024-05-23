@@ -12,15 +12,15 @@ import config from "@/config";
 // You are an excellent lawyer.
 
 // I need your help to write a simple Terms & Services for my website. Here is some context:
-// - Website: https://shipfa.st
-// - Name: ShipFast
-// - Contact information: marc@shipfa.st
-// - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
-// - Ownership: when buying a package, users can download code to create apps. They own the code but they do not have the right to resell it. They can ask for a full refund within 7 day after the purchase.
+// - Website: https://captivize.com
+// - Name: Captivize
+// - Contact information: amirbrahamm@gmail.com
+// - Description: Generate captions from videos
+// - Ownership: when buying a package, users can add captions to their videos
 // - User data collected: name, email and payment information
 // - Non-personal data collection: web cookies
-// - Link to privacy-policy: https://shipfa.st/privacy-policy
-// - Governing Law: France
+// - Link to privacy-policy: https://captivize.com/privacy-policy
+// - Governing Law: United States
 // - Updates to the Terms: users will be updated by email
 
 // Please write a simple Terms & Services for my site. Add the current date. Do not add or explain your reasoning. Answer:
@@ -57,39 +57,35 @@ const TOS = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {`Last Updated: September 26, 2023
+          {`Terms & Services
+Effective Date: May 23, 2024
 
-Welcome to ShipFast!
+Welcome to Captivize! These Terms & Services govern your use of our website (https://captivize.com) and services. By using our services, you agree to these terms.
 
-These Terms of Service ("Terms") govern your use of the ShipFast website at https://shipfa.st ("Website") and the services provided by ShipFast. By using our Website and services, you agree to these Terms.
+1. Services Provided
+Captivize allows users to generate captions from videos. Upon purchasing a package, users gain the ability to add captions to their videos.
 
-1. Description of ShipFast
+2. User Accounts
+To use our services, you must create an account and provide accurate information, including your name, email, and payment information.
 
-ShipFast is a platform that offers a JavaScript code boilerplate to assist entrepreneurs in launching their startups more efficiently.
+3. Data Collection
+We collect personal data such as your name, email, and payment information, as well as non-personal data through web cookies. For more details, please review our Privacy Policy.
 
-2. Ownership and Usage Rights
+4. Ownership and Rights
+By purchasing a package, you obtain the rights to add captions to your videos using our service. All other rights are reserved by Captivize.
 
-When you purchase a package from ShipFast, you gain the right to download and use the code provided for creating applications. You own the code you create but do not have the right to resell it. We offer a full refund within 7 days of purchase, as specified in our refund policy.
+5. Contact Information
+For any inquiries, please contact us at tonyconte1995@gmail.com.
 
-3. User Data and Privacy
+6. Governing Law
+These terms are governed by the laws of the United States.
 
-We collect and store user data, including name, email, and payment information, as necessary to provide our services. For details on how we handle your data, please refer to our Privacy Policy at https://shipfa.st/privacy-policy.
+7. Updates to Terms
+We may update these terms from time to time. Users will be notified of any changes via email.
 
-4. Non-Personal Data Collection
+Thank you for using Captivize!
 
-We use web cookies to collect non-personal data for the purpose of improving our services and user experience.
-
-5. Governing Law
-
-These Terms are governed by the laws of France.
-
-6. Updates to the Terms
-
-We may update these Terms from time to time. Users will be notified of any changes via email.
-
-For any questions or concerns regarding these Terms of Service, please contact us at marc@shipfa.st.
-
-Thank you for using ShipFast!`}
+By using Captivize, you agree to these Terms & Services.`}
         </pre>
       </div>
     </main>
