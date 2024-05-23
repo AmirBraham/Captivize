@@ -1,27 +1,42 @@
+"use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Suspense } from 'react'
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { Suspense, useRef } from 'react'
+export default function Projects() {
+    const fileInput = useRef(null);
+    async function uploadFile(
+        evt
+    ) {
+        evt.preventDefault();
 
-export const dynamic = "force-dynamic";
+        const formData = new FormData();
+        formData.append("file", fileInput.current.files[0]);
 
-// This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
-// It's a server compoment which means you can fetch data (like the user profile) before the page is rendered.
-// See https://shipfa.st/docs/tutorials/private-page
-export default async function Projects() {
+        const response = await fetch("/api/uploadVideo", {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        console.log(result);
+    }
+
+
     return (
         <>
             <Suspense>
                 <Header />
             </Suspense>
-            <main className="min-h-screen p-8 pb-24">
-                <section className="max-w-xl mx-auto space-y-8">
-                    <h1 className="text-3xl md:text-4xl font-extrabold">Projects page</h1>
-                </section>
-                <button className="bg-teal-700 text-white p-2">Upload video</button>
-            </main>
+            <form className="flex flex-col gap-4">
+                <label>
+                    <span>Upload a file</span>
+                    <input type="file" name="file" ref={fileInput} />
+                </label>
+                <button type="submit" onClick={uploadFile}>
+                    Submit
+                </button>
+            </form>
             <Footer />
-
         </>
-
     );
 }
