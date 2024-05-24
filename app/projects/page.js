@@ -1,14 +1,17 @@
 "use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Suspense, useRef, useEffect, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Suspense, useRef, useState } from 'react';
+const tus = require('tus-js-client')
+const projectId = 'mlgnxubgmzngsecafkgr'
 
 export default function Projects() {
 
     const [file, setFile] = useState();
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
+    const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const supabase = createClientComponentClient();
 
     async function uploadFile(evt) {
@@ -19,16 +22,59 @@ export default function Projects() {
         const bucket = "videos"
         console.log(file)
         // Call Storage API to upload file
-        const { data, error } = await supabase.storage
-            .from(bucket)
-            .upload(file.name, file);
-        console.log(data)
-        // Handle error if upload failed
-        if (error) {
-            alert('Error uploading file.');
-            return;
-        }
+        const res = await resumableUploadFile(bucket, file.name, file)
+        console.log(res)
+        
         alert('File uploaded successfully!');
+    }
+
+    async function resumableUploadFile(bucketName, fileName, file) {
+        const { data: { session } } = await supabase.auth.getSession()
+
+        return new Promise((resolve, reject) => {
+            var upload = new tus.Upload(file, {
+                endpoint: `https://${projectId}.supabase.co/storage/v1/upload/resumable`,
+                retryDelays: [0, 3000, 5000, 10000, 20000],
+                headers: {
+                    authorization: `Bearer ${session.access_token}`,
+                    'x-upsert': 'true', // optionally set upsert to true to overwrite existing files
+                },
+                uploadDataDuringCreation: true,
+                removeFingerprintOnSuccess: true, // Important if you want to allow re-uploading the same file https://github.com/tus/tus-js-client/blob/main/docs/api.md#removefingerprintonsuccess
+                metadata: {
+                    bucketName: bucketName,
+                    objectName: fileName,
+                    contentType: 'video/mp4',
+                    cacheControl: 3600,
+                },
+                chunkSize: 6 * 1024 * 1024, // NOTE: it must be set to 6MB (for now) do not change it
+                onError: function (error) {
+                    console.log('Failed because: ' + error)
+                    reject(error)
+                },
+                onProgress: function (bytesUploaded, bytesTotal) {
+                    var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
+                    console.log(bytesUploaded, bytesTotal, percentage + '%')
+                    setFileUploadProgress(percentage)
+                },
+                onSuccess: function () {
+                    console.log('Download %s from %s', upload.file.name, upload.url)
+                    resolve()
+                },
+            })
+
+
+            // Check if there are any previous uploads to continue.
+            return upload.findPreviousUploads().then(function (previousUploads) {
+                // Found previous uploads so we select the first one.
+                if (previousUploads.length) {
+                    upload.resumeFromPreviousUpload(previousUploads[0])
+                }
+
+                // Start the upload
+                upload.start()
+            })
+        })
     }
 
     return (
@@ -110,6 +156,7 @@ export default function Projects() {
                         >
                             Upload
                         </button>
+                        {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
                         <button
                             onClick={() => setFile("")}
                             className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"
