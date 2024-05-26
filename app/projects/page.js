@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation'
+
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
 
@@ -12,7 +14,11 @@ export default function Projects() {
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
+    const [videoStatus,setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
+
+
+
 
     async function uploadFile(evt) {
         evt.preventDefault();
@@ -24,13 +30,12 @@ export default function Projects() {
         // Call Storage API to upload file
         const res = await resumableUploadFile(bucket, file.name, file)
         console.log(res)
-        
-        alert('File uploaded successfully!');
     }
 
     async function resumableUploadFile(bucketName, fileName, file) {
         const { data: { session } } = await supabase.auth.getSession()
-
+        const {data:{user},error} = await supabase.auth.getUser()
+        
         return new Promise((resolve, reject) => {
             var upload = new tus.Upload(file, {
                 endpoint: `https://${projectId}.supabase.co/storage/v1/upload/resumable`,
@@ -50,16 +55,33 @@ export default function Projects() {
                 chunkSize: 6 * 1024 * 1024, // NOTE: it must be set to 6MB (for now) do not change it
                 onError: function (error) {
                     console.log('Failed because: ' + error)
+                    setVideoStatus(error)
                     reject(error)
                 },
                 onProgress: function (bytesUploaded, bytesTotal) {
-                    var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
+                    var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2) 
                     console.log(bytesUploaded, bytesTotal, percentage + '%')
+                    setVideoStatus("uploading : " + percentage)
                     setFileUploadProgress(percentage)
                 },
-                onSuccess: function () {
+                onSuccess: async function () {
                     console.log('Download %s from %s', upload.file.name, upload.url)
-                    resolve()
+                    setVideoStatus("success , creating new project that belong to : " + user.id)
+
+                    try {
+                        const {error} =  await supabase.from('projects').insert({
+                            user_id:user.id,
+                            video_name: upload.file.name
+                        })
+                        if(error) {
+                            console.log(error)
+                        }
+                        resolve()
+                    } catch (error) {
+                        console.log('Error inserting data after video upload : ')
+                        reject(error)
+                    }
+
                 },
             })
 
@@ -157,6 +179,8 @@ export default function Projects() {
                             Upload
                         </button>
                         {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
+                        {videoStatus != "" && <p>{videoStatus} %</p>}
+
                         <button
                             onClick={() => setFile("")}
                             className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"

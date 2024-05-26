@@ -13,7 +13,7 @@ import config from "@/config";
 
 // I need your help to write a simple privacy policy for my website. Here is some context:
 // - Website: https://shipfa.st
-// - Name: ShipFast
+// - Name: Captivize
 // - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
 // - User data collected: name, email and payment information
 // - Non-personal data collection: web cookies

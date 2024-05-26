@@ -13,7 +13,7 @@ import config from "@/config";
 
 // I need your help to write a simple Terms & Services for my website. Here is some context:
 // - Website: https://shipfa.st
-// - Name: ShipFast
+// - Name: Captivize
 // - Contact information: marc@shipfa.st
 // - Description: A JavaScript code boilerplate to help entrepreneurs launch their startups faster
 // - Ownership: when buying a package, users can download code to create apps. They own the code but they do not have the right to resell it. They can ask for a full refund within 7 day after the purchase.
