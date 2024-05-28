@@ -15,7 +15,7 @@ export default function Projects() {
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
-    const [videoStatus,setVideoStatus] = useState("")
+    const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
 
 
@@ -27,77 +27,81 @@ export default function Projects() {
         const file = fileInput.current.files[0]
 
         const bucket = "videos"
-        console.log(file)
-        // Call Storage API to upload file
-        const res = await resumableUploadFile(bucket, file.name, file)
-        console.log(res)
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            console.log(error)
+            console.log("failed to upload")
+        } else {
+            // Call Storage API to upload file
+            const res = await resumableUploadFile(bucket, file.name, file, user)
+            console.log(res)
+        }
     }
 
-    async function resumableUploadFile(bucketName, fileName, file) {
-        const { data: { session } } = await supabase.auth.getSession()
-        const {data:{user},error} = await supabase.auth.getUser()
-        
+    async function resumableUploadFile(bucketName, fileName, file, user) {
+        const { data: { session } } = await supabase.auth.getSession();
+        const userFolderPath = `${user.id}`; // Construct the folder path for the user
         return new Promise((resolve, reject) => {
+
             var upload = new tus.Upload(file, {
-                endpoint: `https://${projectId}.supabase.co/storage/v1/upload/resumable`,
+                endpoint: `https://${projectId}.supabase.co/storage/v1/upload/resumable/${userFolderPath}`,
                 retryDelays: [0, 3000, 5000, 10000, 20000],
                 headers: {
                     authorization: `Bearer ${session.access_token}`,
-                    'x-upsert': 'true', // optionally set upsert to true to overwrite existing files
+                    'x-upsert': 'true',
                 },
                 uploadDataDuringCreation: true,
-                removeFingerprintOnSuccess: true, // Important if you want to allow re-uploading the same file https://github.com/tus/tus-js-client/blob/main/docs/api.md#removefingerprintonsuccess
+                removeFingerprintOnSuccess: true,
                 metadata: {
                     bucketName: bucketName,
-                    objectName: fileName,
-                    contentType: 'video/mp4',
+                    objectName: `${userFolderPath}/${fileName}`,
+                    contentType: file.type,
                     cacheControl: 3600,
                 },
-                chunkSize: 6 * 1024 * 1024, // NOTE: it must be set to 6MB (for now) do not change it
+                chunkSize: 6 * 1024 * 1024,
                 onError: function (error) {
-                    console.log('Failed because: ' + error)
-                    setVideoStatus(error)
-                    reject(error)
+                    console.log('Failed because: ' + error);
+                    setVideoStatus(error);
+                    reject(error);
                 },
                 onProgress: function (bytesUploaded, bytesTotal) {
-                    var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2) 
-                    console.log(bytesUploaded, bytesTotal, percentage + '%')
-                    setVideoStatus("uploading : " + percentage)
-                    setFileUploadProgress(percentage)
+                    var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
+                    console.log(bytesUploaded, bytesTotal, percentage + '%');
+                    setVideoStatus("uploading : " + percentage);
+                    setFileUploadProgress(percentage);
                 },
                 onSuccess: async function () {
-                    console.log('Download %s from %s', upload.file.name, upload.url)
-                    setVideoStatus("success , creating new project that belong to : " + user.id)
+                    console.log('Download %s from %s', upload.file.name, upload.url);
+                    setVideoStatus("success , creating new project that belongs to : " + user.id);
 
                     try {
-                        const {error} =  await supabase.from('projects').insert({
-                            user_id:user.id,
+                        const { error } = await supabase.from('projects').insert({
+                            user_id: user.id,
                             video_name: upload.file.name
-                        })
-                        if(error) {
-                            console.log(error)
+                        });
+                        if (error) {
+                            console.log(error);
                         }
-                        resolve()
+                        resolve();
                     } catch (error) {
-                        console.log('Error inserting data after video upload : ')
-                        reject(error)
+                        console.log('Error inserting data after video upload : ');
+                        reject(error);
                     }
-
                 },
-            })
-
+            });
 
             // Check if there are any previous uploads to continue.
             return upload.findPreviousUploads().then(function (previousUploads) {
                 // Found previous uploads so we select the first one.
                 if (previousUploads.length) {
-                    upload.resumeFromPreviousUpload(previousUploads[0])
+                    upload.resumeFromPreviousUpload(previousUploads[0]);
                 }
 
                 // Start the upload
-                upload.start()
-            })
-        })
+                upload.start();
+            });
+        });
     }
 
     return (

@@ -115,7 +115,6 @@ export default function Custom404() {
           </svg>
           Home
         </Link>
-
         <ButtonSupport />
       </div>
     </section>
