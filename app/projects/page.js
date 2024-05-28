@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation'
+import ButtonAccount from "@/components/ButtonAccount";
 
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
