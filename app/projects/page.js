@@ -2,9 +2,10 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Suspense, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation'
 import ButtonAccount from "@/components/ButtonAccount";
+import ProjectsGrid from "@/components/ProjectGrid";
 
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
@@ -14,24 +15,35 @@ export default function Projects() {
     const [file, setFile] = useState();
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
+    const [user,setUser] = useState(null)
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const { data:{user}, error } = await supabase.auth.getUser()
+                if (error) {
+                    throw error;
+                }
+                setUser(user);
+            } catch (error) {
+                console.error('Error fetching user:', error.message);
+            }
+        };
+        fetchUser()
 
+    },[])
 
 
     async function uploadFile(evt) {
         evt.preventDefault();
-
         const file = fileInput.current.files[0]
-
         const bucket = "videos"
-        const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            console.log(error)
-            console.log("failed to upload")
+            console.log("failed to upload , user issue")
         } else {
             // Call Storage API to upload file
             const res = await resumableUploadFile(bucket, file.name, file, user)
@@ -109,6 +121,9 @@ export default function Projects() {
             <Suspense>
                 <Header />
             </Suspense>
+            {user && <ProjectsGrid user={user}/>}
+            
+            
             <form className="container px-4 max-w-5xl mx-auto">
                 <input
                     id="file"
