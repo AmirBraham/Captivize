@@ -1,8 +1,12 @@
 "use client";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import config from "@/config";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Suspense, useEffect,useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { Player } from "@remotion/player";
+import { MyComposition } from "@/app/remotion/Composition";
+
 
 export default function Project({ params }) {
     const supabase = createClientComponentClient();
@@ -10,20 +14,34 @@ export default function Project({ params }) {
     const [loading, setLoading] = useState(true);
     const [project, setProject] = useState(null);
     const [error, setError] = useState(null);
+    const [videoUrl, setVideoUrl] = useState(null)
     useEffect(() => {
         const getProject = async () => {
             try {
-                const { data, error } = await supabase
+                const { data: projectData, error: projectError } = await supabase
                     .from('projects')
                     .select('*')
-                    .eq('id', project_id)
+                    .eq('id', parseInt(project_id))
                     .single();
-                console.log(data)
-                if (error) {
-                    setError('Error fetching project: ' + error.message);
+
+                if (projectError) {
+                    setError('Error fetching project: ' + projectError.message);
                 } else {
-                    console.log(data)
-                    setProject(data);
+                    setProject(projectData);
+                    const user_id = projectData.user_id;
+
+                    // Fetching the corresponding video
+                    const { data: signedUrlData, error: videoError } = await supabase
+                        .storage
+                        .from('videos')
+                        .createSignedUrl(`${user_id}/${projectData.video_name}`, config.sessionDuration);
+
+                    if (videoError) {
+                        setError('Error fetching video: ' + videoError.message);
+                    } else {
+                        console.log(signedUrlData);
+                        setVideoUrl(signedUrlData.signedUrl);
+                    }
                 }
             } catch (err) {
                 setError('An unexpected error occurred: ' + err.message);
@@ -39,6 +57,8 @@ export default function Project({ params }) {
             setLoading(false);
         }
     }, [project_id]);
+
+
     return (
         <>
             <Suspense>
@@ -51,7 +71,17 @@ export default function Project({ params }) {
                     <h2>{project.video_name}</h2>
                 </>)
             }
-
+            {videoUrl === null ? null : (
+                <Player
+                    component={MyComposition}
+                    durationInFrames={2000}
+                    compositionWidth={200}
+                    compositionHeight={355}
+                    fps={30}    
+                    controls
+                    inputProps={{ videoUrl }}
+                />
+            )}
             <Footer />
         </>
     );

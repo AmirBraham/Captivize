@@ -1,10 +1,13 @@
 import { AbsoluteFill, Video } from "remotion";
 
 
-export const MyComponent = ({ videoURL }) => {
+export const MyComposition = ({videoUrl}) => {
     return (
         <AbsoluteFill>
-            <Video src={videoURL} />
+            <Video src={videoUrl} />
+            <AbsoluteFill from={10} durationInFrames={20}>
+                <h1>This text appears on top of the video!</h1>
+            </AbsoluteFill>
         </AbsoluteFill>
     );
 };
