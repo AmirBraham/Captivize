@@ -3,10 +3,8 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation'
-import ButtonAccount from "@/components/ButtonAccount";
 import ProjectsGrid from "@/components/ProjectGrid";
-
+import CaptionGenerator from "@/components/CaptionGenerator"
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
 
@@ -19,7 +17,7 @@ export default function Projects() {
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
-
+    const [videoUploadUrl,setVideoUploadUrl] = useState(null)
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -45,7 +43,6 @@ export default function Projects() {
         if (!user) {
             console.log("failed to upload , user issue")
         } else {
-            // Call Storage API to upload file
             const res = await resumableUploadFile(bucket, file.name, file, user)
             console.log(res)
         }
@@ -86,7 +83,7 @@ export default function Projects() {
                 onSuccess: async function () {
                     console.log('Download %s from %s', upload.file.name, upload.url);
                     setVideoStatus("success , creating new project that belongs to : " + user.id);
-
+                    
                     try {
                         const { error } = await supabase.from('projects').insert({
                             user_id: user.id,
@@ -95,6 +92,7 @@ export default function Projects() {
                         if (error) {
                             console.log(error);
                         }
+                        setVideoUploadUrl(upload.url)
                         resolve();
                     } catch (error) {
                         console.log('Error inserting data after video upload : ');
@@ -200,7 +198,7 @@ export default function Projects() {
                         </button>
                         {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
                         {videoStatus != "" && <p>{videoStatus} %</p>}
-
+                        {videoUploadUrl && <CaptionGenerator videoUrl={videoUploadUrl}/>}
                         <button
                             onClick={() => setFile("")}
                             className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"

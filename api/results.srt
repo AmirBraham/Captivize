@@ -1,0 +1,119 @@
+1
+00:00:02,432 --> 00:00:02,540
+<font color="#00ff00">You're</font> not the mayor.
+
+2
+00:00:02,540 --> 00:00:02,660
+You're <font color="#00ff00">not</font> the mayor.
+
+3
+00:00:02,660 --> 00:00:02,840
+You're not <font color="#00ff00">the</font> mayor.
+
+4
+00:00:02,840 --> 00:00:03,120
+You're not the <font color="#00ff00">mayor.</font>
+
+5
+00:00:05,824 --> 00:00:06,300
+<font color="#00ff00">Things</font> change.
+
+6
+00:00:06,300 --> 00:00:06,780
+Things <font color="#00ff00">change.</font>
+
+7
+00:00:09,440 --> 00:00:09,540
+<font color="#00ff00">What</font> do you want?
+
+8
+00:00:09,540 --> 00:00:09,600
+What <font color="#00ff00">do</font> you want?
+
+9
+00:00:09,600 --> 00:00:09,700
+What do <font color="#00ff00">you</font> want?
+
+10
+00:00:09,700 --> 00:00:09,920
+What do you <font color="#00ff00">want?</font>
+
+11
+00:00:10,780 --> 00:00:11,000
+<font color="#00ff00">Ah,</font>
+
+12
+00:00:11,700 --> 00:00:11,800
+<font color="#00ff00">the</font> direct approach.
+
+13
+00:00:11,800 --> 00:00:12,120
+the <font color="#00ff00">direct</font> approach.
+
+14
+00:00:12,120 --> 00:00:12,640
+the direct <font color="#00ff00">approach.</font>
+
+15
+00:00:13,536 --> 00:00:13,640
+<font color="#00ff00">I</font> admire that, and a man with a mask.
+
+16
+00:00:13,640 --> 00:00:13,920
+I <font color="#00ff00">admire</font> that, and a man with a mask.
+
+17
+00:00:13,920 --> 00:00:14,320
+I admire <font color="#00ff00">that,</font> and a man with a mask.
+
+18
+00:00:14,320 --> 00:00:14,420
+I admire that, and a man with a mask.
+
+19
+00:00:14,420 --> 00:00:14,480
+I admire that, <font color="#00ff00">and</font> a man with a mask.
+
+20
+00:00:14,480 --> 00:00:14,520
+I admire that, and <font color="#00ff00">a</font> man with a mask.
+
+21
+00:00:14,520 --> 00:00:14,740
+I admire that, and a <font color="#00ff00">man</font> with a mask.
+
+22
+00:00:14,740 --> 00:00:14,940
+I admire that, and a man <font color="#00ff00">with</font> a mask.
+
+23
+00:00:14,940 --> 00:00:15,080
+I admire that, and a man with <font color="#00ff00">a</font> mask.
+
+24
+00:00:15,080 --> 00:00:15,560
+I admire that, and a man with a <font color="#00ff00">mask.</font>
+
+25
+00:00:18,060 --> 00:00:18,760
+<font color="#00ff00">You</font>
+
+26
+00:00:21,568 --> 00:00:21,820
+<font color="#00ff00">don't</font> really think you'll win, do you?
+
+27
+00:00:21,820 --> 00:00:22,020
+don't <font color="#00ff00">really</font> think you'll win, do you?
+
+28
+00:00:22,020 --> 00:00:22,300
+don't really <font color="#00ff00">think</font> you'll win, do you?
+
+29
+00:00:22,300 --> 00:00:22,580
+don't really think <font color="#00ff00">you'll</font> win, do you?
+
+30
+00:00:22,580 --> 00:00:22,980
+don't really think you'll <font color="#00ff00">win, do you?</font>

@@ -1,0 +1,18 @@
+{
+    "Video":"test.mp4",
+    "Captions":{
+        "FontFamily":"Montserrat",
+        "FontSize":64,
+        "Color":"#FFFFFF",
+        "HighlightColor":"#e5bb50",
+        "Delay":0,
+        "Wait":0.5
+    },
+    "Rendering":{
+        "PreviewMode":true,
+        "Fps":20,
+        "Height":1280,
+        "Duration":0,
+        "Cleanup":false
+    }
+}
