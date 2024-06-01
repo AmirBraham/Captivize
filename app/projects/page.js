@@ -49,32 +49,14 @@ export default function Projects() {
     }
     const fetchCaptions = async (videoUrl) => {
         const timeout = 60000 * 60; // 1 hour
-        const controller = new AbortController();
-        const signal = controller.signal;
-
-        const fetchWithTimeout = (url, options, timeout) => {
-            return new Promise((resolve, reject) => {
-                const timer = setTimeout(() => {
-                    controller.abort();
-                    reject(new Error('Request timed out'));
-                }, timeout);
-
-                fetch(url, options)
-                    .then(response => {
-                        clearTimeout(timer);
-                        resolve(response);
-                    })
-                    .catch(error => {
-                        clearTimeout(timer);
-                        reject(error);
-                    });
-            });
-        };
-
         try {
             const captionsUrl = `/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
-            const response = await fetchWithTimeout(captionsUrl, { signal }, timeout);
-            const data = await response.json();
+            const response = await axios({
+                url: captionsUrl, timeout: timeout, method: "get", headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = response.data
             console.log(data);
             return data;
         } catch (error) {
@@ -135,9 +117,9 @@ export default function Projects() {
                             return;
                         }
                         // Adding captions to project
+                        setVideoStatus("generating captions...");
+
                         const captions = await fetchCaptions(data.signedUrl)
-                        console.log(projectData[0])
-                        console.log(projectData[0].id)
                         const { error } = await supabase.from("projects").update({
                             "captions": captions,
                         }).eq('id', projectData[0].id)

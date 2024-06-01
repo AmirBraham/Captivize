@@ -15,6 +15,7 @@ export default function Project({ params }) {
     const [project, setProject] = useState(null);
     const [error, setError] = useState(null);
     const [videoUrl, setVideoUrl] = useState(null)
+    const [captions, setCaptions] = useState(null)
     useEffect(() => {
         const getProject = async () => {
             try {
@@ -28,6 +29,7 @@ export default function Project({ params }) {
                     setError('Error fetching project: ' + projectError.message);
                 } else {
                     setProject(projectData);
+                    setCaptions(projectData.captions)
                     const user_id = projectData.user_id;
 
                     // Fetching the corresponding video
@@ -71,17 +73,30 @@ export default function Project({ params }) {
                     <h2>{project.video_name}</h2>
                 </>)
             }
-            {videoUrl === null ? null : (
+            <div className="flex flex-row w-8/12 mx-auto justify-between ">
+                <div>
+                    {captions === null ? null :
+                        captions["segments"].map((segment, i) => {
+                            return <h3>{segment["text"]}</h3>
+                        })
+                    }
+                </div>
+                <div>
+                {videoUrl === null ? null : (
                 <Player
                     component={MyComposition}
                     durationInFrames={2000}
                     compositionWidth={200}
                     compositionHeight={355}
-                    fps={30}    
+                    fps={30}
                     controls
                     inputProps={{ videoUrl }}
                 />
             )}
+                </div>
+            </div>
+           
+
             <Footer />
         </>
     );

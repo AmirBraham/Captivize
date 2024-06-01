@@ -5,8 +5,8 @@ export const MyComposition = ({videoUrl}) => {
     return (
         <AbsoluteFill>
             <Video src={videoUrl} />
-            <AbsoluteFill from={10} durationInFrames={20}>
-                <h1>This text appears on top of the video!</h1>
+            <AbsoluteFill from={2} durationInFrames={20}>
+                <h1 className="text-white">Testing captions</h1>
             </AbsoluteFill>
         </AbsoluteFill>
     );
