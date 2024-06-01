@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import ProjectsGrid from "@/components/ProjectGrid";
 import CaptionGenerator from "@/components/CaptionGenerator"
+import axios from "axios";
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
 
@@ -13,15 +14,15 @@ export default function Projects() {
     const [file, setFile] = useState();
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
-    const [user,setUser] = useState(null)
+    const [user, setUser] = useState(null)
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
-    const [videoUploadUrl,setVideoUploadUrl] = useState(null)
+    const [videoUploadUrl, setVideoUploadUrl] = useState(null)
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const { data:{user}, error } = await supabase.auth.getUser()
+                const { data: { user }, error } = await supabase.auth.getUser()
                 if (error) {
                     throw error;
                 }
@@ -32,7 +33,7 @@ export default function Projects() {
         };
         fetchUser()
 
-    },[])
+    }, [])
 
 
     async function uploadFile(evt) {
@@ -43,10 +44,43 @@ export default function Projects() {
         if (!user) {
             console.log("failed to upload , user issue")
         } else {
-            const res = await resumableUploadFile(bucket, file.name, file, user)
-            console.log(res)
+            await resumableUploadFile(bucket, file.name, file, user)
         }
     }
+    const fetchCaptions = async (videoUrl) => {
+        const timeout = 60000 * 60; // 1 hour
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        const fetchWithTimeout = (url, options, timeout) => {
+            return new Promise((resolve, reject) => {
+                const timer = setTimeout(() => {
+                    controller.abort();
+                    reject(new Error('Request timed out'));
+                }, timeout);
+
+                fetch(url, options)
+                    .then(response => {
+                        clearTimeout(timer);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        clearTimeout(timer);
+                        reject(error);
+                    });
+            });
+        };
+
+        try {
+            const captionsUrl = `/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
+            const response = await fetchWithTimeout(captionsUrl, { signal }, timeout);
+            const data = await response.json();
+            console.log(data);
+            return data;
+        } catch (error) {
+            console.error('Error fetching captions:', error);
+        }
+    };
 
     async function resumableUploadFile(bucketName, fileName, file, user) {
         const { data: { session } } = await supabase.auth.getSession();
@@ -76,23 +110,38 @@ export default function Projects() {
                 },
                 onProgress: function (bytesUploaded, bytesTotal) {
                     var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-                    console.log(bytesUploaded, bytesTotal, percentage + '%');
                     setVideoStatus("uploading : " + percentage);
                     setFileUploadProgress(percentage);
                 },
                 onSuccess: async function () {
                     console.log('Download %s from %s', upload.file.name, upload.url);
                     setVideoStatus("success , creating new project that belongs to : " + user.id);
-                    
+
                     try {
-                        const { error } = await supabase.from('projects').insert({
+                        const { data: projectData, error: projectError } = await supabase.from('projects').insert({
                             user_id: user.id,
                             video_name: upload.file.name
-                        });
-                        if (error) {
-                            console.log(error);
+                        }).select();
+                        if (projectError) {
+                            console.log(projectError);
                         }
-                        setVideoUploadUrl(upload.url)
+                        const { data, error: signedUrlError } = await supabase
+                            .storage
+                            .from(bucketName)
+                            .createSignedUrl(`${userFolderPath}/${fileName}`, 3600 * 24); // URL valid for 24 hours
+                        if (signedUrlError) {
+                            console.log('Error creating signed URL:', signedUrlError);
+                            reject(signedUrlError);
+                            return;
+                        }
+                        // Adding captions to project
+                        const captions = await fetchCaptions(data.signedUrl)
+                        console.log(projectData[0])
+                        console.log(projectData[0].id)
+                        const { error } = await supabase.from("projects").update({
+                            "captions": captions,
+                        }).eq('id', projectData[0].id)
+                        console.log(error)
                         resolve();
                     } catch (error) {
                         console.log('Error inserting data after video upload : ');
@@ -119,9 +168,7 @@ export default function Projects() {
             <Suspense>
                 <Header />
             </Suspense>
-            {user && <ProjectsGrid user={user}/>}
-            
-            
+            {user && <ProjectsGrid user={user} />}
             <form className="container px-4 max-w-5xl mx-auto">
                 <input
                     id="file"
@@ -198,7 +245,7 @@ export default function Projects() {
                         </button>
                         {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
                         {videoStatus != "" && <p>{videoStatus} %</p>}
-                        {videoUploadUrl && <CaptionGenerator videoUrl={videoUploadUrl}/>}
+
                         <button
                             onClick={() => setFile("")}
                             className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"

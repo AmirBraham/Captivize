@@ -1,43 +1,48 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function CaptionGenerator({ videoUrl }) {
-    const [progress, setProgress] = useState(0);
     const [transcription, setTranscription] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        const eventSource = new EventSource(`/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`);
+        const fetchCaptions = async () => {
+            try {
+                const captionsUrl = `/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
+                setLoading(true);
 
-        eventSource.onmessage = (event) => {
-            const { data } = event;
-            const parsedData = JSON.parse(data);
-            if (event.type === "progress") {
-                setProgress(parseFloat(parsedData));
-            } else if (event.type === "result") {
-                setTranscription(parsedData);
-                setProgress(100);
-                eventSource.close();
+                const response = await fetch(captionsUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                setTranscription(data);
+            } catch (error) {
+                console.error('Error fetching captions:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        eventSource.onerror = (error) => {
-            console.error('EventSource failed:', error);
-            eventSource.close();
-        };
-
-        return () => {
-            eventSource.close();
-        };
+        fetchCaptions();
     }, [videoUrl]);
 
     return (
         <div>
-            <p>Caption Generation Progress: {progress.toFixed(2)}%</p>
-            <progress value={progress} max="100" />
-            {transcription && (
-                <div>
-                    <h2>Transcription Result:</h2>
-                    <pre>{JSON.stringify(transcription, null, 2)}</pre>
-                </div>
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                <>
+                    <p>Caption Generation Progress: {progress.toFixed(2)}%</p>
+                    <progress value={progress} max="100" />
+                    {transcription && (
+                        <div>
+                            <h2>Transcription Result:</h2>
+                            <pre>{JSON.stringify(transcription, null, 2)}</pre>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

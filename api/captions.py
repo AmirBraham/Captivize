@@ -90,7 +90,7 @@ def transcribe(file_path, text=""):
     result.save_as_json("captions.json")
     with open("captions.json", "r") as f:
         captions = json.load(f)
-
+    print("done generating captions")
     return captions
 
 
