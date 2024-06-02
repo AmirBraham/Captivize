@@ -73,29 +73,40 @@ export default function Project({ params }) {
                     <h2>{project.video_name}</h2>
                 </>)
             }
-            <div className="flex flex-row w-8/12 mx-auto justify-between ">
+            <div className="flex flex-row w-10/12 mx-auto justify-between ">
                 <div>
                     {captions === null ? null :
-                        captions["segments"].map((segment, i) => {
-                            return <h3>{segment["text"]}</h3>
-                        })
+                        <div className="flex flex-col bg-slate-50">
+                            {
+
+                                captions["segments"].map((segment, i) => {
+                                    return (<div className="">
+                                        <p>{segment["start"]} - {segment["end"]}</p>
+
+                                        <p>{segment["text"]}</p>
+
+                                    </div>)
+                                    return
+                                })
+                            }
+                        </div>
                     }
                 </div>
                 <div>
-                {videoUrl === null ? null : (
-                <Player
-                    component={MyComposition}
-                    durationInFrames={2000}
-                    compositionWidth={200}
-                    compositionHeight={355}
-                    fps={30}
-                    controls
-                    inputProps={{ videoUrl }}
-                />
-            )}
+                    {videoUrl === null || captions === null ? null : (
+                        <Player
+                            component={MyComposition}
+                            durationInFrames={2000}
+                            compositionWidth={281}
+                            compositionHeight={500}
+                            fps={24}
+                            controls
+                            inputProps={{ videoUrl, captions }}
+                        />
+                    )}
                 </div>
             </div>
-           
+
 
             <Footer />
         </>

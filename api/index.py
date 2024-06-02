@@ -6,10 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from tqdm import tqdm
 from supabase import create_client, Client
 import os
-import time
+from dotenv import load_dotenv
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
+load_dotenv(".env.local") # Make sure to have a .env.local at the root of the project
+url: str = os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
+key: str = os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
 supabase: Client = create_client(url, key)
 
 

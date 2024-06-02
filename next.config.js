@@ -12,6 +12,7 @@ const nextConfig = {
       "logos-world.net",
     ],
   },
+  
   rewrites: async () => {
     return [
       {
