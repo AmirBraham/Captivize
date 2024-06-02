@@ -46,3 +46,4 @@ env
 /api/v1/media
 /api/v1/main
 api/.env
+video.mov

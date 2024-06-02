@@ -61,5 +61,3 @@ async def generate_captions(
     transcription_result = transcribe(file_path=local_path)
     return transcription_result
 
-
-#We are currently generating captions on the backend

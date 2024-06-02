@@ -50,7 +50,7 @@ export default function Projects() {
     const fetchCaptions = async (videoUrl) => {
         const timeout = 60000 * 60; // 1 hour
         try {
-            const captionsUrl = `/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
+            const captionsUrl = `http://localhost:5050/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
             const response = await axios({
                 url: captionsUrl, timeout: timeout, method: "get", headers: {
                     'Content-Type': 'application/json',

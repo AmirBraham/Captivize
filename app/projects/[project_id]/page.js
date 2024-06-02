@@ -24,7 +24,7 @@ export default function Project({ params }) {
                     .select('*')
                     .eq('id', parseInt(project_id))
                     .single();
-
+                    
                 if (projectError) {
                     setError('Error fetching project: ' + projectError.message);
                 } else {
@@ -93,7 +93,7 @@ export default function Project({ params }) {
                     }
                 </div>
                 <div>
-                    {videoUrl === null || captions === null ? null : (
+                    {videoUrl === null  ? null : (
                         <Player
                             component={MyComposition}
                             durationInFrames={2000}
