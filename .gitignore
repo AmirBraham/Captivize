@@ -47,3 +47,6 @@ env
 /api/v1/main
 api/.env
 video.mov
+video.mp4
+video.mov
+captions.json

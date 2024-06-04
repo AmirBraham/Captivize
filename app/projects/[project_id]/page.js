@@ -24,7 +24,7 @@ export default function Project({ params }) {
                     .select('*')
                     .eq('id', parseInt(project_id))
                     .single();
-                    
+
                 if (projectError) {
                     setError('Error fetching project: ' + projectError.message);
                 } else {
@@ -79,21 +79,19 @@ export default function Project({ params }) {
                         <div className="flex flex-col bg-slate-50">
                             {
 
-                                captions["segments"].map((segment, i) => {
-                                    return (<div className="">
-                                        <p>{segment["start"]} - {segment["end"]}</p>
+                                captions["segments"].map((segment, i) =>
+                                (<div className="">
+                                    <p>{segment["start"]} - {segment["end"]}</p>
 
-                                        <p>{segment["text"]}</p>
-
-                                    </div>)
-                                    return
-                                })
+                                    <p>{segment["text"]}</p>
+                                </div>)
+                                )
                             }
                         </div>
                     }
                 </div>
                 <div>
-                    {videoUrl === null  ? null : (
+                    {videoUrl === null ? null : (
                         <Player
                             component={MyComposition}
                             durationInFrames={2000}

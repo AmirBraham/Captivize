@@ -4,8 +4,6 @@ import Header from "@/components/Header";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import ProjectsGrid from "@/components/ProjectGrid";
-import CaptionGenerator from "@/components/CaptionGenerator"
-import axios from "axios";
 const tus = require('tus-js-client')
 const projectId = 'mlgnxubgmzngsecafkgr'
 
@@ -18,7 +16,6 @@ export default function Projects() {
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
-    const [videoUploadUrl, setVideoUploadUrl] = useState(null)
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -47,21 +44,32 @@ export default function Projects() {
             await resumableUploadFile(bucket, file.name, file, user)
         }
     }
-    const fetchCaptions = async (videoUrl) => {
-        const timeout = 60000 * 60; // 1 hour
-        try {
-            const captionsUrl = `http://localhost:5050/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
-            const response = await axios({
-                url: captionsUrl, timeout: timeout, method: "get", headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            const data = response.data
-            console.log(data);
-            return data;
-        } catch (error) {
-            console.error('Error fetching captions:', error);
-        }
+    const fetchCaptions =  (videoUrl) => {
+        return new Promise((resolve, reject) => {
+            try {
+                const captionsUrl = `http://localhost:5050/api/generate_captions?video_url=${encodeURIComponent(videoUrl)}`;
+                const eventSource = new EventSource(captionsUrl);
+    
+                eventSource.addEventListener("progress", (event) => {
+                    console.log(event.data);
+                });
+    
+                eventSource.addEventListener("result", (event) => {
+                    console.log(JSON.parse(event.data));
+                    eventSource.close(); // Close the connection once the result is received
+                    resolve(JSON.parse(event.data)); // Resolve the promise with the received data
+                });
+    
+                eventSource.onerror = function (error) {
+                    console.error('Error fetching captions:', error);
+                    eventSource.close(); // Ensure the connection is closed on error
+                    reject(error); // Reject the promise on error
+                };
+            } catch (error) {
+                console.error('Error fetching captions:', error);
+                reject(error); // Reject the promise if there is a catch block error
+            }
+        });
     };
 
     async function resumableUploadFile(bucketName, fileName, file, user) {
@@ -120,6 +128,7 @@ export default function Projects() {
                         setVideoStatus("generating captions...");
 
                         const captions = await fetchCaptions(data.signedUrl)
+                        console.log(captions)
                         const { error } = await supabase.from("projects").update({
                             "captions": captions,
                         }).eq('id', projectData[0].id)
@@ -242,3 +251,6 @@ export default function Projects() {
         </>
     );
 }
+
+
+// We are now transcribing the video , takes about 30 seconds on my computer

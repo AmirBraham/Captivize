@@ -25,13 +25,15 @@ export const MyComposition = ({ videoUrl, captions }) => {
         <AbsoluteFill>
             <Video src={videoUrl} />
             {
-                captions["segments"].map((segment, i) => {
-                    return (
-                        <Sequence key={i} from={segment["start"] * 24} durationInFrames={(segment["end"] - segment["start"]) * 24}>
-                            <Caption frame={frame} segment={segment} />
-                        </Sequence>
-                    );
-                })
+                captions && (
+                    captions["segments"].map((segment, i) => {
+                        return (
+                            <Sequence key={i} from={segment["start"] * 24} durationInFrames={(segment["end"] - segment["start"]) * 24}>
+                                <Caption frame={frame} segment={segment} />
+                            </Sequence>
+                        );
+                    })
+                )
             }
         </AbsoluteFill>
     );

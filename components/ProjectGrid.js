@@ -12,7 +12,6 @@ export default function ProjectsGrid({ user }) {
 
         async function fetchProjects() {
             try {
-                console.log(user)
                 const { data, error } = await supabase.from('projects').select('*').eq('user_id', user.id);
                 if (error) {
                     throw error;

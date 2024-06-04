@@ -91,7 +91,7 @@ def transcribe(file_path, text=""):
     with open("captions.json", "r") as f:
         captions = json.load(f)
     print("done generating captions")
-    return captions
+    return json.dumps(captions)
 
 
 if __name__ == "__main__":
