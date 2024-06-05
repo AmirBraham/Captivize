@@ -17,6 +17,9 @@ export default function Projects() {
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
     useEffect(() => {
+        console.log("Are WE GOOD ? ")
+    },[])
+    useEffect(() => {
         const fetchUser = async () => {
             try {
                 const { data: { user }, error } = await supabase.auth.getUser()

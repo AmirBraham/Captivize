@@ -12,6 +12,10 @@ from sse_starlette.sse import EventSourceResponse
 import asyncio
 import progressbar
 import json
+import stable_whisper
+from pydantic import BaseModel
+
+
 load_dotenv(".env.local")  # Make sure to have a .env.local at the root of the project
 url: str = os.environ.get("NEXT_PUBLIC_SUPABASE_URL")
 key: str = os.environ.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")
@@ -23,7 +27,7 @@ RETRY_TIMEOUT = 15000  # milisecond
 # add CORS so our web page can connect to our api
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,6 +81,8 @@ def download_video(url, local_path):
 progress_bar = MyProgressBar()
 
 
+
+
 @app.get("/api/generate_captions")
 async def generate_captions(
     video_url: AnyUrl = Query(
@@ -91,8 +97,6 @@ async def generate_captions(
         try:
             download_video(str(video_url), local_path=local_path)
             transcription_result = transcribe(file_path="video.mp4")
-            print("transcriptino done")
-            print(transcription_result)
             progress_bar.progress = 100  # Enforcing the progress to be set to 100
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Error retrieving video: {e}")
@@ -113,3 +117,25 @@ async def generate_captions(
                 break
 
     return EventSourceResponse(event_generator())
+
+
+
+class CaptionRegroupRequest(BaseModel):
+    captions: str
+    max_words: int
+
+@app.post("/api/regroup_captions")
+async def regroup_captions(request: CaptionRegroupRequest):
+    file_path = "captions.json"
+    with open(file_path,"w") as f:
+        f.write(request.captions)
+        
+    print(request.max_words)
+    result = stable_whisper.WhisperResult(result=file_path)
+    result = result.split_by_length(max_words=request.max_words)
+    print("Split segments by max words")
+    result.save_as_json("captions.json")
+    with open("captions.json", "r") as f:
+        modified_captions = json.load(f)
+    return modified_captions
+

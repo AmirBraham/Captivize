@@ -47,7 +47,6 @@ const Caption = ({ frame,segment }) => {
         <div style={styles.captionContainer}>
             <h1 style={styles.captionText}>
                 {segment.words.map((word, index) => {
-                    console.log(word.start , word.end)
                     const isHighlighted = currentTime >= word.start && currentTime <= word.end;
                     return (
                         <span

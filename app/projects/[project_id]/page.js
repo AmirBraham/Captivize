@@ -6,7 +6,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Suspense, useEffect, useState } from 'react';
 import { Player } from "@remotion/player";
 import { MyComposition } from "@/app/remotion/Composition";
-
+import apiClient from "@/libs/api";
 
 export default function Project({ params }) {
     const supabase = createClientComponentClient();
@@ -16,6 +16,19 @@ export default function Project({ params }) {
     const [error, setError] = useState(null);
     const [videoUrl, setVideoUrl] = useState(null)
     const [captions, setCaptions] = useState(null)
+    const [maxWords, setMaxWords] = useState(3)
+
+    useEffect(() => {
+        if (captions && maxWords > 0) {
+            console.log(maxWords)
+            apiClient.post("/captions/regroup-captions",{
+                captions: JSON.stringify(captions),
+                max_words: maxWords
+            }).then(data=>{
+                setCaptions(data)
+            })
+        }
+    }, [maxWords])
     useEffect(() => {
         const getProject = async () => {
             try {
@@ -41,7 +54,6 @@ export default function Project({ params }) {
                     if (videoError) {
                         setError('Error fetching video: ' + videoError.message);
                     } else {
-                        console.log(signedUrlData);
                         setVideoUrl(signedUrlData.signedUrl);
                     }
                 }
@@ -73,6 +85,11 @@ export default function Project({ params }) {
                     <h2>{project.video_name}</h2>
                 </>)
             }
+            <input value={maxWords} onChange={e => {
+                setMaxWords(e.target.value)
+
+            }}>
+            </input>
             <div className="flex flex-row w-10/12 mx-auto justify-between ">
                 <div>
                     {captions === null ? null :
@@ -80,7 +97,7 @@ export default function Project({ params }) {
                             {
 
                                 captions["segments"].map((segment, i) =>
-                                (<div className="">
+                                (<div key={i} className="">
                                     <p>{segment["start"]} - {segment["end"]}</p>
 
                                     <p>{segment["text"]}</p>
@@ -90,7 +107,9 @@ export default function Project({ params }) {
                         </div>
                     }
                 </div>
-                <div>
+                {
+                    /*
+                    <div>
                     {videoUrl === null ? null : (
                         <Player
                             component={MyComposition}
@@ -103,6 +122,8 @@ export default function Project({ params }) {
                         />
                     )}
                 </div>
+                    */
+                }
             </div>
 
 

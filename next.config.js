@@ -2,7 +2,7 @@
 
 
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: [
       // NextJS <Image> component needs to whitelist domains for src={}
