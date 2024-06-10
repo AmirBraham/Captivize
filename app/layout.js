@@ -5,7 +5,7 @@ import ClientLayout from "@/components/LayoutClient";
 import config from "@/config";
 import "./globals.css";
 
-const font = Inter({ subsets: ["latin"] });
+const font = Inter({ subsets: ["latin"],display: 'swap', });
 
 export const viewport = {
   // Will use the primary color of your theme to show a nice theme color in the URL bar of supported browsers

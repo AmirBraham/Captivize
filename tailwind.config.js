@@ -6,7 +6,16 @@ module.exports = {
     "./styles/globals.css",
   ],
   theme: {
+    
     extend: {
+      boxShadow: {
+        'custom-1': '7px -3px 8.7px #C9E4FC',
+        'custom-2': '-10px -1px 20px #F3C9FF',
+      },
+      colors:{
+        "grey":"#F6F6F6",
+        "off-black":"#313131"
+      },
       backgroundImage: {
         gradient:
           "linear-gradient(60deg, #f79533, #f37055, #ef4e7b, #a166ab, #5073b8, #1098ad, #07b39b, #6fba82)",

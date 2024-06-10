@@ -20,3 +20,8 @@ progress::-webkit-progress-value {
     @apply !capitalize;
   }
 }
+
+
+.btn-custom-shadow {
+  @apply shadow-custom-1 shadow-custom-2;
+}

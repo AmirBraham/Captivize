@@ -26,8 +26,7 @@ export default function ProjectsGrid({ user }) {
     }, []);
 
     return (
-        <div className="w-2/3 mx-auto border rounded  bg-slate-100">
-            <h3>Projects</h3>
+        <div>
             <div className="grid grid-cols-3 gap-4 mt-4">
                 {projects.map(project => (
                     <Link key={project.id} href={`/projects/${project.id}`}>
