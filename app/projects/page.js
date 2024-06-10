@@ -162,7 +162,7 @@ export default function Projects() {
     return (
         <div className="flex flex-row h-screen">
             <div className="basis-[20%] flex flex-col justify-start items-center py-10">
-                <div className="flex items-start justify-center basis-2/12">
+                <div className="flex items-start justify-center basis-1/12">
                     <Image
                         src={logo}
                         alt={`${config.appName} logo`}
@@ -170,7 +170,7 @@ export default function Projects() {
                         className="w-2/3"
                     />
                 </div>
-                <div className="flex flex-col w-10/12 justify-start basis-7/12">
+                <div className="flex flex-col w-10/12 justify-start basis-6/12">
                     <div className="flex flex-col space-y-2  ">
 
                         <Link href="#" className="bg-black w-10/12 text-white font-bold text-md w-10/12 h-12 justify-center content-center text-center py-2 rounded-lg">
@@ -203,9 +203,9 @@ export default function Projects() {
                     </div>
 
                 </div>
-                <div className="flex flex-col w-11/12 justify-between basis-3/12 space-y-4 ">
-                    <div className="flex flex-col space-y-4 w-full align-center  ">
-                            <div className="w-9/12 mx-auto bg-transparent ">
+                <div className="flex flex-col w-11/12 justify-between basis-5/12 space-y-4 ">
+                    <div className="flex flex-col space-y-4 w-full h-full justify-between  align-center  ">
+                        <div className="w-9/12 mx-auto bg-transparent ">
 
                             <div className="flex  w-[170px] bg-transparent	 items-center  shadow-custom-2  rounded-xl ">
                                 <button className="flex font-bold items-center  flex-row bg-black shadow-custom-1 text-white w-full p-3  rounded-xl ">
@@ -216,7 +216,7 @@ export default function Projects() {
                                     Upgrade Now
                                 </button>
                             </div>
-                            </div>
+                        </div>
 
                         <Link href="#" className="flex text-gray-400 font-bold w-9/12 mx-auto text-lg items-center  ">
                             <svg className="mr-2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -231,9 +231,7 @@ export default function Projects() {
                             </svg>
                             Settings
                         </Link>
-                    </div>
-
-                    <div className="flex flex-row w-full bg-[#FAFAFA] justify-between px-4 py-3 rounded-lg  items-center">
+                        <div className="flex flex-row w-full bg-[#FAFAFA] justify-between px-4 py-3 rounded-lg  items-center">
                         <div className="flex flex-col">
                             <p className="text-black font-bold">tonyconte95@gm..</p>
                             <p className="text-xs font-semibold text-gray-500">Total Credits: 3</p>
@@ -243,13 +241,18 @@ export default function Projects() {
                             <path d="M6.875 8H17.375M17.375 8L14.75 5.375M17.375 8L14.75 10.625" stroke="#89949E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </div>
+                    </div>
+
+                   
 
                 </div>
             </div>
             <div className="basis-[80%] p-8 bg-grey">
                 <h1 className="text-3xl font-bold">Your Videos</h1>
                 {user && <ProjectsGrid user={user} />}
-                <form className="container px-4 max-w-5xl mx-auto">
+                {
+                    /*
+<form className="container px-4 max-w-5xl mx-auto">
                     <input
                         id="file"
                         type="file"
@@ -335,6 +338,9 @@ export default function Projects() {
                         </div>
                     )}
                 </form>
+
+                    */
+                }
 
             </div>
         </div>
