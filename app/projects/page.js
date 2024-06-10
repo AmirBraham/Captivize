@@ -233,10 +233,10 @@ export default function Projects() {
                         </Link>
                     </div>
 
-                    <div className="flex flex-row w-full bg-[#FAFAFA] justify-between px-4 py-2 rounded-lg  items-center">
+                    <div className="flex flex-row w-full bg-[#FAFAFA] justify-between px-4 py-3 rounded-lg  items-center">
                         <div className="flex flex-col">
                             <p className="text-black font-bold">tonyconte95@gm..</p>
-                            <p>Total Credits: 3</p>
+                            <p className="text-xs font-semibold text-gray-500">Total Credits: 3</p>
                         </div>
                         <svg width="19" height="16" viewBox="0 0 19 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11.25 4.5V2.75C11.25 2.28587 11.0656 1.84075 10.7374 1.51256C10.4092 1.18437 9.96413 1 9.5 1H3.375C2.91087 1 2.46575 1.18437 2.13756 1.51256C1.80937 1.84075 1.625 2.28587 1.625 2.75V13.25C1.625 13.7141 1.80937 14.1592 2.13756 14.4874C2.46575 14.8156 2.91087 15 3.375 15H9.5C9.96413 15 10.4092 14.8156 10.7374 14.4874C11.0656 14.1592 11.25 13.7141 11.25 13.25V11.5" stroke="#89949E" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
