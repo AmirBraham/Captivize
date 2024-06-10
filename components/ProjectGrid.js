@@ -2,37 +2,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import TimeDisplay from './TimeDisplay';
-
-
-const OptionsMenu = ({ projectId, isOpen, onToggleMenu, onEdit, onDelete }) => {
-    return (
-        <div className='relative'>
-            <button onClick={() => onToggleMenu(projectId)}>
-                <p className='font-bold text-lg text-gray-500'>...</p>
-            </button>
-            {isOpen && (
-                <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md'>
-                    <button 
-                        onClick={() => onEdit(projectId)} 
-                        className='block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
-                    >
-                        Edit
-                    </button>
-                    <button 
-                        onClick={() => onDelete(projectId)} 
-                        className='block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
-                    >
-                        Delete
-                    </button>
-                </div>
-            )}
-        </div>
-    );
-};
-
+import Image from 'next/image'
+import ProjectItem from './ProjectItem';
 
 export default function ProjectsGrid({ user }) {
-    const supabase = createClientComponentClient()
+    const supabase = createClientComponentClient();
     const [projects, setProjects] = useState([]);
     const [openMenuId, setOpenMenuId] = useState(null);
 
@@ -51,7 +25,6 @@ export default function ProjectsGrid({ user }) {
     };
 
     useEffect(() => {
-
         async function fetchProjects() {
             try {
                 const { data, error } = await supabase.from('projects').select('*').eq('user_id', user.id);
@@ -65,36 +38,23 @@ export default function ProjectsGrid({ user }) {
         }
 
         fetchProjects();
-    }, []);
+    }, [user.id, supabase]);
 
     return (
         <div>
             <div className="grid grid-cols-3 gap-4 mt-4">
                 {projects.map(project => (
-                    <div className='flex flex-col w-[300px]'>
-                        <div className='bg-[#ECEDEE] rounded-xl w-full h-[180px]'>
-                            <Link key={project.id} href={`/projects/${project.id}`}>
-
-                            </Link>
-                        </div>
-                        <div className='flex flex-row'>
-                            <p className='text-xs font-semibold text-black'>{project.video_name}</p>
-                            
-                            <OptionsMenu 
-                            projectId={project.id} 
-                            isOpen={openMenuId === project.id} 
-                            onToggleMenu={toggleMenu} 
-                            onEdit={handleEdit} 
-                            onDelete={handleDelete} 
-                        />
-                        </div>
-                        <TimeDisplay createdAt={project.created_at} />
-                    </div>
-
-
+                    <ProjectItem
+                        key={project.id}
+                        project={project}
+                        user={user}
+                        openMenuId={openMenuId}
+                        toggleMenu={toggleMenu}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                    />
                 ))}
             </div>
         </div>
     );
 }
-

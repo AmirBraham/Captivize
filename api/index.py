@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import AnyUrl
 import requests
 from api.captions import transcribe
@@ -14,6 +14,9 @@ import progressbar
 import json
 import stable_whisper
 from pydantic import BaseModel
+from moviepy.editor import VideoFileClip
+from PIL import Image
+from fastapi.responses import StreamingResponse
 
 
 load_dotenv(".env.local")  # Make sure to have a .env.local at the root of the project
@@ -81,6 +84,31 @@ def download_video(url, local_path):
 progress_bar = MyProgressBar()
 
 
+@app.get("/api/generate_thumbnail")
+async def generate_thumbnail(video_url: AnyUrl = Query(
+        ..., description="The URL of the video to generate thumbnail for"
+    )):
+    print("generating thumbnails")
+    # Route to generate a small thumbnail from a video_url
+    video_path = "video_thumbnail.mp4"
+    thumbnail_path = "thumbnail.png"
+    resized_thumbnail_path = "resized_thumbnail.png"
+    download_video(str(video_url), local_path=video_path)
+    video = VideoFileClip(video_path)
+    frame = video.get_frame(video.duration / 2)
+    # Convert the frame to an image
+    image = Image.fromarray(frame)
+    image.save(thumbnail_path)
+    os.remove(video_path)
+    # Resize the image to a width of 200 pixels, maintaining aspect ratio
+    image = Image.open(thumbnail_path)
+    aspect_ratio = image.height / image.width
+    new_width = 200
+    new_height = int(new_width * aspect_ratio)
+    resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+    resized_image.save(resized_thumbnail_path)
+    os.remove(thumbnail_path)
+    return StreamingResponse(open(resized_thumbnail_path, "rb"), media_type="image/png")
 
 
 @app.get("/api/generate_captions")
@@ -119,23 +147,20 @@ async def generate_captions(
     return EventSourceResponse(event_generator())
 
 
-
 class CaptionRegroupRequest(BaseModel):
     captions: str
     max_words: int
 
+
 @app.post("/api/regroup_captions")
 async def regroup_captions(request: CaptionRegroupRequest):
     file_path = "captions.json"
-    with open(file_path,"w") as f:
+    with open(file_path, "w") as f:
         f.write(request.captions)
-        
-    print(request.max_words)
+
     result = stable_whisper.WhisperResult(result=file_path)
     result = result.split_by_length(max_words=request.max_words)
-    print("Split segments by max words")
     result.save_as_json("captions.json")
     with open("captions.json", "r") as f:
         modified_captions = json.load(f)
     return modified_captions
-

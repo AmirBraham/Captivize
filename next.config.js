@@ -10,6 +10,7 @@ const nextConfig = {
       "pbs.twimg.com",
       "images.unsplash.com",
       "logos-world.net",
+      "mlgnxubgmzngsecafkgr.supabase.co" // curent supabase endpoint
     ],
   },
 };
