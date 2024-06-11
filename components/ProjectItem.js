@@ -5,22 +5,21 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import TimeDisplay from './TimeDisplay';
 
 
-const OptionsMenu = ({ projectId, isOpen, onToggleMenu, onEdit, onDelete }) => {
+const OptionsMenu = ({ project, isOpen, onToggleMenu, onEdit, onDelete }) => {
     return (
         <div className='relative'>
-            <button onClick={() => onToggleMenu(projectId)}>
+            <button onClick={() => onToggleMenu(project.id)}>
                 <p className='font-bold text-lg text-gray-500'>...</p>
             </button>
             {isOpen && (
                 <div className='absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md'>
-                    <button
-                        onClick={() => (projectId)}
+                    <Link href={`/projects/${project.id}`}
                         className='block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
                     >
                         Edit
-                    </button>
+                    </Link>
                     <button
-                        onClick={() => onDelete(projectId)}
+                        onClick={() => onDelete(project)}
                         className='block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
                     >
                         Delete
@@ -59,25 +58,23 @@ export default function ProjectItem({ project, user, openMenuId, toggleMenu, han
     return (
         <div key={project.id} className='flex flex-col w-[300px]'>
             <Link href={`/projects/${project.id}`}>
-            <div className='bg-[#ECEDEE] rounded-xl w-full h-[180px] flex justify-center items-center '>
-                {thumbnailUrl && (
-                    <Image
-                        src={thumbnailUrl}
-                        className='h-5/6 shadow-md	rounded-xl'
-                        alt="Thumbnail of the project"
-                        width={90}
-                        height={177}
-                    />
-                )}
-                
-                   
-            </div>
+                <div className='bg-[#ECEDEE] rounded-xl w-full h-[180px] flex justify-center items-center '>
+                    {thumbnailUrl && (
+                        <Image
+                            src={thumbnailUrl}
+                            className='h-5/6 shadow-md	rounded-xl'
+                            alt="Thumbnail of the project"
+                            width={90}
+                            height={177}
+                        />
+                    )}
+                </div>
             </Link>
 
-            <div className="flex flex-row">
-                <p className="text-xs text-black font-semibold">{project.video_name}</p>
+            <div className="flex flex-row justify-between">
+                <p className="text-xs text-black self-center font-semibold">{project.video_name}</p>
                 <OptionsMenu
-                    projectId={project.id}
+                    project={project}
                     isOpen={openMenuId === project.id}
                     onToggleMenu={toggleMenu}
                     onEdit={handleEdit}

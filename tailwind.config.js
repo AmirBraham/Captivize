@@ -14,7 +14,8 @@ module.exports = {
       },
       colors:{
         "grey":"#F6F6F6",
-        "off-black":"#313131"
+        "off-black":"#313131",
+        "slate":"#89949E"
       },
       backgroundImage: {
         gradient:

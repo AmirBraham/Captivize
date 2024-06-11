@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import TimeDisplay from './TimeDisplay';
-import Image from 'next/image'
 import ProjectItem from './ProjectItem';
 
 export default function ProjectsGrid({ user }) {
@@ -19,9 +16,29 @@ export default function ProjectsGrid({ user }) {
         // Implement edit functionality here
     };
 
-    const handleDelete = (id) => {
-        console.log(`Deleting project ${id}`);
-        // Implement delete functionality here
+    const handleDelete = async (project) => {
+        const userFolderPath = user.id
+        const video_path = `${userFolderPath}/${project.video_name}`
+        const video_thumbnail_path = `${userFolderPath}/thumbnail-${project.video_name}.png`
+         
+         // Delete project
+         const { data: projectData, error: projectError } = await supabase
+         .from('projects')
+         .delete()
+         .eq('id', project.id)
+         .select()
+        console.log(projectData)
+        // Delete video and thumbnail from videos bucket
+        const { data: storageData, error: storageError } = await supabase
+            .storage
+            .from('videos')
+            .remove([video_path,video_thumbnail_path])
+        if(storageError) {
+            console.log("could not delete storage : ", storageError)
+        }
+        if (projectError) {
+            console.log("could not delete project : ", projectError)
+        }
     };
 
     useEffect(() => {

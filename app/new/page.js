@@ -147,7 +147,7 @@ export default function New() {
                             return;
                         }
                         setVideoStatus("generating thumbnail...");
-                        const thumbnail = await fetchThumbnail(upload.file.name,data.signedUrl)
+                        const thumbnail = await fetchThumbnail(upload.file.name, data.signedUrl)
                         console.log(thumbnail)
                         // Adding captions to project
                         setVideoStatus("generating captions...");
@@ -181,102 +181,118 @@ export default function New() {
 
     return (
         <div className="flex flex-row h-screen">
-            <SidebarHeader/>
-            <div className="basis-[80%] p-8 bg-grey">
-                <p className="text-3xl font-bold">Upload New Video</p>
-                <p className="text-base font-semibold text-gray-500">Upload a video and we will add captions to it.</p>
+            <SidebarHeader />
+            <div className="flex  flex-col basis-[60%] p-8 bg-grey">
+                <div className='basis-[60%] '>
+                    <p className="text-3xl font-bold">Upload New Video</p>
+                    <p className="text-base font-semibold text-gray-500">Upload a video and we will add captions to it.</p>
+                    <div className="container rounded-xl bg-white p-2">
 
-                <form className="container px-4 max-w-5xl mx-auto">
-                    <input
-                        id="file"
-                        type="file"
-                        ref={fileInput}
-                        className="hidden"
-                        onChange={(e) => {
-                            let files = e.target.files;
-                            if (files && files[0]) {
-                                let blobUrl = URL.createObjectURL(files[0]);
-                                setFile(blobUrl);
 
-                            }
-                        }}
-                    />
-                    {!file ? (
-                        <div
-                            onDragOver={(e) => {
-                                e.preventDefault();
-                                setFileEnter(true);
-                            }}
-                            onDragLeave={(e) => {
-                                setFileEnter(false);
-                            }}
-                            onDragEnd={(e) => {
-                                e.preventDefault();
-                                setFileEnter(false);
-                            }}
-                            onDrop={(e) => {
-                                e.preventDefault();
-                                setFileEnter(false);
-                                if (e.dataTransfer.items) {
-                                    [...e.dataTransfer.items].forEach((item, i) => {
-                                        if (item.kind === "file") {
-                                            const file = item.getAsFile();
-                                            if (file) {
-                                                let blobUrl = URL.createObjectURL(file);
-                                                setFile(blobUrl);
+                        <form >
+                            <input
+                                id="file"
+                                type="file"
+                                ref={fileInput}
+                                className="hidden"
+                                onChange={(e) => {
+                                    let files = e.target.files;
+                                    if (files && files[0]) {
+                                        let blobUrl = URL.createObjectURL(files[0]);
+                                        setFile(blobUrl);
+
+                                    }
+                                }}
+                            />
+                            {!file ? (
+                                <div className='bg-white p-2'>
+                                    <p className='text-lg text-off-black font-bold mb-2'>Upload your video file</p>
+                                    <div
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            setFileEnter(true);
+                                        }}
+                                        onDragLeave={(e) => {
+                                            setFileEnter(false);
+                                        }}
+                                        onDragEnd={(e) => {
+                                            e.preventDefault();
+                                            setFileEnter(false);
+                                        }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            setFileEnter(false);
+                                            if (e.dataTransfer.items) {
+                                                [...e.dataTransfer.items].forEach((item, i) => {
+                                                    if (item.kind === "file") {
+                                                        const file = item.getAsFile();
+                                                        if (file) {
+                                                            let blobUrl = URL.createObjectURL(file);
+                                                            setFile(blobUrl);
+                                                        }
+                                                        console.log(`items file[${i}].name = ${file?.name}`);
+                                                    }
+                                                });
+                                            } else {
+                                                [...e.dataTransfer.files].forEach((file, i) => {
+                                                    console.log(`… file[${i}].name = ${file.name}`);
+                                                });
                                             }
-                                            console.log(`items file[${i}].name = ${file?.name}`);
-                                        }
-                                    });
-                                } else {
-                                    [...e.dataTransfer.files].forEach((file, i) => {
-                                        console.log(`… file[${i}].name = ${file.name}`);
-                                    });
-                                }
-                            }}
-                            className={`${fileEnter ? "border-4" : "border-2"
-                                } mx-auto  bg-white flex flex-col w-full max-w-xs h-72 border-dashed items-center justify-center`}
-                        >
-                            <label
-                                htmlFor="file"
-                                className="h-full flex flex-col justify-center text-center"
-                            >
-                                Click to upload or drag and drop
-                            </label>
+                                        }}
+                                        className={`${fileEnter ? "border-4" : "border-2"
+                                            }  bg-[#FBFBFB]  bg-white flex flex-col w-full w-5/6 mx-auto h-72 border-dashed rounded-xl items-center justify-center`}
+                                    >
 
-                        </div>
-                    ) : (
+                                        <label
+                                            htmlFor="file"
+                                            className="h-full flex flex-col justify-center text-center text-slate"
+                                        >
+                                            <div className='self-center'>
 
-                        <div className="flex flex-col items-center">
-                            <video width="320" height="240" controls preload="none">
-                                <source src={file} type="video/mp4" />
+                                                <svg width="41" height="33" viewBox="0 0 41 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M10.5415 25.25C8.30602 25.25 6.16208 24.4006 4.58134 22.8885C3.0006 21.3765 2.11255 19.3258 2.11255 17.1875C2.11255 15.0492 3.0006 12.9985 4.58134 11.4865C6.16208 9.97444 8.30602 9.125 10.5415 9.125C11.0695 6.77286 12.6141 4.70583 14.8354 3.37862C15.9353 2.72145 17.1683 2.26569 18.4639 2.03737C19.7595 1.80905 21.0924 1.81263 22.3864 2.04792C23.6805 2.2832 24.9104 2.74558 26.0059 3.40865C27.1014 4.07172 28.0411 4.9225 28.7713 5.91241C29.5015 6.90233 30.0079 8.01198 30.2616 9.17803C30.5153 10.3441 30.5113 11.5437 30.2499 12.7083H32.0415C33.7047 12.7083 35.2997 13.369 36.4757 14.545C37.6517 15.721 38.3124 17.316 38.3124 18.9792C38.3124 20.6423 37.6517 22.2373 36.4757 23.4133C35.2997 24.5893 33.7047 25.25 32.0415 25.25H30.2499" stroke="#49DE80" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M14.125 19.875L19.5 14.5M19.5 14.5L24.875 19.875M19.5 14.5V30.625" stroke="#49DE80" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                            </div>
 
-                                Your browser does not support the video tag.
-                            </video>
-                            <button
-                                type="submit"
-                                onClick={uploadFile}
-                                className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-green-600 text-white rounded"
-                            >
-                                Upload
-                            </button>
-                            {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
-                            {videoStatus != "" && <p>{videoStatus} %</p>}
+                                            Drop your video file or <span className='font-bold' >click here</span> to browse files.
+                                        </label>
 
-                            <button
-                                onClick={() => setFile("")}
-                                className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"
-                            >
-                                Reset
-                            </button>
-                        </div>
-                    )}
-                </form>
+                                    </div>
+                                </div>
+
+                            ) : (
+
+                                <div className="flex flex-col items-center">
+                                    <video width="200" height="240" controls preload="none">
+                                        <source src={file} type="video/mp4" />
+
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <button
+                                        type="submit"
+                                        onClick={uploadFile}
+                                        className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-green-600 text-white rounded"
+                                    >
+                                        Upload
+                                    </button>
+                                    {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
+                                    {videoStatus != "" && <p>{videoStatus} %</p>}
+
+                                    <button
+                                        onClick={() => setFile("")}
+                                        className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"
+                                    >
+                                        Reset
+                                    </button>
+                                </div>
+                            )}
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
 
     );
 }
-
-
-// We are now transcribing the video , takes about 30 seconds on my computer

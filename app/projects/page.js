@@ -1,6 +1,6 @@
 "use client";
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProjectsGrid from "@/components/ProjectGrid";
 import SidebarHeader from '@/components/SidebarHeader';
 
