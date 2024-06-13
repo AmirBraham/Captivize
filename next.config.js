@@ -4,13 +4,37 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: [
-      // NextJS <Image> component needs to whitelist domains for src={}
-      "lh3.googleusercontent.com",
-      "pbs.twimg.com",
-      "images.unsplash.com",
-      "logos-world.net",
-      "mlgnxubgmzngsecafkgr.supabase.co" // curent supabase endpoint
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'logos-world.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mlgnxubgmzngsecafkgr.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

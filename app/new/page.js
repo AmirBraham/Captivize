@@ -4,17 +4,18 @@ import { useEffect, useRef, useState } from 'react';
 import SidebarHeader from '@/components/SidebarHeader';
 
 const tus = require('tus-js-client')
-const projectId = 'mlgnxubgmzngsecafkgr'
+const supabaseId = 'mlgnxubgmzngsecafkgr'
 
 export default function New() {
     // Creating a new project here
-    const [file, setFile] = useState();
+    const [file, setFile] = useState(null);
     const [fileEnter, setFileEnter] = useState(false);
     const fileInput = useRef(null)
     const [user, setUser] = useState(null)
     const [fileUploadProgress, setFileUploadProgress] = useState(0)
     const [videoStatus, setVideoStatus] = useState("")
     const supabase = createClientComponentClient();
+    const [project, setProject] = useState(null)
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -31,16 +32,38 @@ export default function New() {
 
     }, [])
 
+    useEffect(() => {
+        console.log(project)
+    }, [project])
 
     async function uploadFile(evt) {
         evt.preventDefault();
-        const file = fileInput.current.files[0]
+        console.log(fileInput)
+        if(!file) {
+            console.log("missing file")
+            return
+        }
+        // Creating a new project
+        const { data: projectData, error: projectError } = await supabase.from('projects').insert({
+            user_id: user.id
+        }).select();
+        if (projectError || !projectData || projectData.length === 0) {
+            console.log("failed to create project");
+            return;
+        }
+        setProject(projectData[0])
         const bucket = "videos"
 
-        if (!user) {
+        const uploadedFile = fileInput.current.files[0]
+        const originalFileName = uploadedFile.name;
+        const fileExtension = originalFileName.split('.').pop();
+        const fileNameWithoutExtension = originalFileName.substring(0, originalFileName.lastIndexOf('.'));
+        const newFileName = `${fileNameWithoutExtension}-${projectData[0].id}.${fileExtension}`;
+
+        if (!user || projectError) {
             console.log("failed to upload , user issue")
         } else {
-            await resumableUploadFile(bucket, file.name, file, user)
+            await resumableUploadFile(projectData[0].id, bucket, newFileName, uploadedFile, user)
         }
     }
 
@@ -95,12 +118,12 @@ export default function New() {
         });
     };
 
-    async function resumableUploadFile(bucketName, fileName, file, user) {
+    async function resumableUploadFile(projectId, bucketName, fileName, file, user) {
         const { data: { session } } = await supabase.auth.getSession();
         const userFolderPath = `${user.id}`; // Construct the folder path for the user
         return new Promise((resolve, reject) => {
             var upload = new tus.Upload(file, {
-                endpoint: `https://${projectId}.supabase.co/storage/v1/upload/resumable/${userFolderPath}`,
+                endpoint: `https://${supabaseId}.supabase.co/storage/v1/upload/resumable/${userFolderPath}`,
                 retryDelays: [0, 3000, 5000, 10000, 20000],
                 headers: {
                     authorization: `Bearer ${session.access_token}`,
@@ -126,14 +149,14 @@ export default function New() {
                     setFileUploadProgress(percentage);
                 },
                 onSuccess: async function () {
-                    console.log(upload)
-                    console.log('Download %s from %s', upload.file.name, upload.url);
-                    setVideoStatus("success , creating new project that belongs to : " + user.id);
+                    console.log('Download %s from %s', fileName, upload.url);
+                    setVideoStatus("success , assinging video to new project :")
                     try {
-                        const { data: projectData, error: projectError } = await supabase.from('projects').insert({
-                            user_id: user.id,
-                            video_name: upload.file.name
-                        }).select();
+                        const { data: projectData, error: projectError } = await supabase
+                            .from('projects')
+                            .update({ video_name: fileName })
+                            .eq('id', projectId).select();
+
                         if (projectError) {
                             console.log(projectError);
                         }
@@ -147,7 +170,7 @@ export default function New() {
                             return;
                         }
                         setVideoStatus("generating thumbnail...");
-                        const thumbnail = await fetchThumbnail(upload.file.name, data.signedUrl)
+                        const thumbnail = await fetchThumbnail(fileName, data.signedUrl)
                         console.log(thumbnail)
                         // Adding captions to project
                         setVideoStatus("generating captions...");
@@ -184,17 +207,32 @@ export default function New() {
             <SidebarHeader />
             <div className="flex  flex-col basis-[60%] p-8 bg-grey">
                 <div className='basis-[60%] '>
+                    <div className='mb-4'>
                     <p className="text-3xl font-bold">Upload New Video</p>
                     <p className="text-base font-semibold text-gray-500">Upload a video and we will add captions to it.</p>
-                    <div className="container rounded-xl bg-white p-2">
+                    </div>
+                    
+                    <form className='flex flex-col'>
+                        <div className="container rounded-xl bg-white p-2">
 
-
-                        <form >
+                            {
+                                file && (<div className='w-full text-end'>
+                                    <button
+                                        onClick={() => setFile("")}
+                                        className="p-2 text-base font-bold text-off-black rounded-xl"
+                                    >
+                                        X
+                                    </button>
+                                </div>)
+                            }
                             <input
                                 id="file"
                                 type="file"
                                 ref={fileInput}
                                 className="hidden"
+                                onClick={(event)=> { 
+                                    event.target.value = null
+                               }}
                                 onChange={(e) => {
                                     let files = e.target.files;
                                     if (files && files[0]) {
@@ -250,8 +288,8 @@ export default function New() {
                                             <div className='self-center'>
 
                                                 <svg width="41" height="33" viewBox="0 0 41 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M10.5415 25.25C8.30602 25.25 6.16208 24.4006 4.58134 22.8885C3.0006 21.3765 2.11255 19.3258 2.11255 17.1875C2.11255 15.0492 3.0006 12.9985 4.58134 11.4865C6.16208 9.97444 8.30602 9.125 10.5415 9.125C11.0695 6.77286 12.6141 4.70583 14.8354 3.37862C15.9353 2.72145 17.1683 2.26569 18.4639 2.03737C19.7595 1.80905 21.0924 1.81263 22.3864 2.04792C23.6805 2.2832 24.9104 2.74558 26.0059 3.40865C27.1014 4.07172 28.0411 4.9225 28.7713 5.91241C29.5015 6.90233 30.0079 8.01198 30.2616 9.17803C30.5153 10.3441 30.5113 11.5437 30.2499 12.7083H32.0415C33.7047 12.7083 35.2997 13.369 36.4757 14.545C37.6517 15.721 38.3124 17.316 38.3124 18.9792C38.3124 20.6423 37.6517 22.2373 36.4757 23.4133C35.2997 24.5893 33.7047 25.25 32.0415 25.25H30.2499" stroke="#49DE80" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round" />
-                                                    <path d="M14.125 19.875L19.5 14.5M19.5 14.5L24.875 19.875M19.5 14.5V30.625" stroke="#49DE80" stroke-width="3.58333" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M10.5415 25.25C8.30602 25.25 6.16208 24.4006 4.58134 22.8885C3.0006 21.3765 2.11255 19.3258 2.11255 17.1875C2.11255 15.0492 3.0006 12.9985 4.58134 11.4865C6.16208 9.97444 8.30602 9.125 10.5415 9.125C11.0695 6.77286 12.6141 4.70583 14.8354 3.37862C15.9353 2.72145 17.1683 2.26569 18.4639 2.03737C19.7595 1.80905 21.0924 1.81263 22.3864 2.04792C23.6805 2.2832 24.9104 2.74558 26.0059 3.40865C27.1014 4.07172 28.0411 4.9225 28.7713 5.91241C29.5015 6.90233 30.0079 8.01198 30.2616 9.17803C30.5153 10.3441 30.5113 11.5437 30.2499 12.7083H32.0415C33.7047 12.7083 35.2997 13.369 36.4757 14.545C37.6517 15.721 38.3124 17.316 38.3124 18.9792C38.3124 20.6423 37.6517 22.2373 36.4757 23.4133C35.2997 24.5893 33.7047 25.25 32.0415 25.25H30.2499" stroke="#49DE80" strokeWidth="3.58333" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M14.125 19.875L19.5 14.5M19.5 14.5L24.875 19.875M19.5 14.5V30.625" stroke="#49DE80" strokeWidth="3.58333" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </div>
 
@@ -264,31 +302,30 @@ export default function New() {
                             ) : (
 
                                 <div className="flex flex-col items-center">
-                                    <video width="200" height="240" controls preload="none">
+                                    <video  width="270" controls preload="none">
                                         <source src={file} type="video/mp4" />
-
                                         Your browser does not support the video tag.
                                     </video>
-                                    <button
-                                        type="submit"
-                                        onClick={uploadFile}
-                                        className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-green-600 text-white rounded"
-                                    >
-                                        Upload
-                                    </button>
-                                    {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
-                                    {videoStatus != "" && <p>{videoStatus} %</p>}
 
-                                    <button
-                                        onClick={() => setFile("")}
-                                        className="px-4 mt-10 uppercase py-2 tracking-widest outline-none bg-red-600 text-white rounded"
-                                    >
-                                        Reset
-                                    </button>
                                 </div>
                             )}
-                        </form>
-                    </div>
+                        </div>
+
+                        <div>
+
+                            <button
+                                type="submit"
+                                onClick={uploadFile}
+                                className="mt-4 p-3 bg-black font-bold text-white rounded-md"
+                            >
+                                Generate Video
+                            </button>
+                            {fileUploadProgress > 0 && <p>{fileUploadProgress} %</p>}
+                            {videoStatus != "" && <p>{videoStatus} %</p>}
+
+
+                        </div>
+                    </form>
                 </div>
 
             </div>
