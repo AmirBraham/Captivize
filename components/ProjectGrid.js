@@ -35,9 +35,15 @@ export default function ProjectsGrid({ user }) {
             .remove([video_path,video_thumbnail_path])
         if(storageError) {
             console.log("could not delete storage : ", storageError)
+            return
         }
         if (projectError) {
             console.log("could not delete project : ", projectError)
+            return
+        }
+        // Update projects state after successful deletion
+        if (projectData && storageData) {
+            setProjects(prevProjects => prevProjects.filter(p => p.id !== project.id));
         }
     };
 
